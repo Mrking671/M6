@@ -1,7 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const TelegramBot = require('telegram-bot-api');
 require('dotenv').config();
 
 const app = express();
@@ -26,11 +25,6 @@ const videoSchema = new mongoose.Schema({
 
 const Video = mongoose.model('Video', videoSchema);
 
-// Telegram Bot Setup
-const bot = new TelegramBot({
-  token: process.env.TELEGRAM_BOT_TOKEN
-});
-
 // API to Fetch Videos
 app.get('/api/videos', async (req, res) => {
   try {
@@ -45,7 +39,7 @@ app.get('/api/videos', async (req, res) => {
 app.get('/api/video/:id', async (req, res) => {
   try {
     const video = await Video.findById(req.params.id);
-    const fileLink = await bot.getFileLink(video.fileId);
+    const fileLink = `https://t.me/c/${video.channelId.toString().replace('-100', '')}/${video.messageId}`;
     res.json({ url: fileLink });
   } catch (err) {
     res.status(500).json({ error: err.message });
